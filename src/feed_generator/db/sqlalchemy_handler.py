@@ -11,3 +11,4 @@ class SqlAlchemyHandler:
             cls._instances[connection_string].engine = create_engine(connection_string)
             cls._instances[connection_string].Session = sessionmaker(bind=cls._instances[connection_string].engine)
         return cls._instances[connection_string]
+
