@@ -1,7 +1,7 @@
 from elasticsearch import Elasticsearch
 import xml.etree.ElementTree as ET
 
-from settings import ELASTICSEARCH_HOST
+from settings import ELASTICSEARCH_HOST, ELASTICSEARCH_INDEX
 
 
 def main():
@@ -19,7 +19,7 @@ def main():
     output_file_name = "output.xml"
 
     # Execute query and save results to XML
-    execute_query_and_save_to_xml(es, index_name, search_query, output_file_name)
+    execute_query_and_save_to_xml(es, ELASTICSEARCH_INDEX, search_query, output_file_name)
 
 
 def execute_query_and_save_to_xml(es, index, query, output_file):
