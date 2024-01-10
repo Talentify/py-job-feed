@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
-class DatabaseHandler:
+class SqlAlchemyHandler:
     _instances = {}
 
     def __new__(cls, connection_string):
