@@ -1,20 +1,16 @@
 import sys
 
 import click
-from elasticsearch import Elasticsearch
 import xml.etree.ElementTree as ET
 
-from settings import ELASTICSEARCH_HOST, ELASTICSEARCH_INDEX, ELASTICSEARCH_USER, ELASTICSEARCH_PASSWORD
+from settings import ELASTICSEARCH_INDEX
 from src.feed_generator.db import job_feed_config_queries
+from src.feed_generator.db.elasticsearch_handler import ElasticSearchHandler
 
 
 @click.command()
 @click.option('--id', type=int, help='ID from table job_feed_config', required=True)
 def main(id):
-    es = Elasticsearch([ELASTICSEARCH_HOST],
-                       basic_auth=(ELASTICSEARCH_USER, ELASTICSEARCH_PASSWORD)
-                       )
-
     job_feed_config = job_feed_config_queries.query_by_id(id)
     if not job_feed_config:
         print(f"job_feed_config not found with ID {id}")
@@ -24,11 +20,12 @@ def main(id):
     output_file_name = "output.xml"
 
     # Execute query and save results to XML
-    execute_query_and_save_to_xml(es, ELASTICSEARCH_INDEX, job_feed_config.query, output_file_name)
+    execute_query_and_save_to_xml(ELASTICSEARCH_INDEX, job_feed_config.query, output_file_name)
 
 
-def execute_query_and_save_to_xml(es, index, query, output_file):
+def execute_query_and_save_to_xml(index, query, output_file):
     # Execute the query
+    es = ElasticSearchHandler.get_default().client
     response = es.search(index=index, body=query)
 
     # Create XML tree
