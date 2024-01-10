@@ -9,11 +9,11 @@ from src.feed_generator.exporters.xml_exporter import XMLExporter
 
 
 @click.command()
-@click.option('--id', type=int, help='ID from table job_feed_config', required=True)
-def main(id):
-    job_feed_config = job_feed_config_queries.query_by_id(id)
+@click.option('--job-feed-config-id', type=int, help='ID from table job_feed_config', required=True)
+def main(job_feed_config_id):
+    job_feed_config = job_feed_config_queries.query_by_id(job_feed_config_id)
     if not job_feed_config:
-        print(f"job_feed_config not found with ID {id}")
+        print(f"job_feed_config not found with ID {job_feed_config_id}")
         sys.exit(1)
 
     exporter = XMLExporter()
