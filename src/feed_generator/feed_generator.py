@@ -20,13 +20,6 @@ def main(id):
         print(f"job_feed_config not found with ID {id}")
         sys.exit(1)
 
-    # Specify index and query
-    search_query = {
-        "query": {
-            "match_all": {}
-        }
-    }
-
     # Output XML file
     output_file_name = "output.xml"
 
