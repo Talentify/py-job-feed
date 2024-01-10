@@ -1,0 +1,3 @@
+import os
+
+ELASTICSEARCH_HOST = os.getenv("ELASTICSEARCH_HOST")
