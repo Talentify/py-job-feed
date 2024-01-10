@@ -1,14 +1,15 @@
 from elasticsearch import Elasticsearch
 import xml.etree.ElementTree as ET
 
-from settings import ELASTICSEARCH_HOST, ELASTICSEARCH_INDEX
+from settings import ELASTICSEARCH_HOST, ELASTICSEARCH_INDEX, ELASTICSEARCH_USER, ELASTICSEARCH_PASSWORD
 
 
 def main():
-    es = Elasticsearch([ELASTICSEARCH_HOST])
+    es = Elasticsearch([ELASTICSEARCH_HOST],
+                       basic_auth=(ELASTICSEARCH_USER, ELASTICSEARCH_PASSWORD)
+                       )
 
     # Specify index and query
-    index_name = "your_index_name"
     search_query = {
         "query": {
             "match_all": {}
