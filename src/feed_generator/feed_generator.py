@@ -20,7 +20,27 @@ def main(job_feed_config_id):
     output_file_name = "output.xml"
     es = ElasticSearchHandler.get_default().client
 
-    response = es.search(index=ELASTICSEARCH_INDEX, body=job_feed_config.query)
+    fields = [
+        "description.common",
+        "title",
+        "location.*",
+        "compensation.*",
+        "type.*",
+        "client.*",
+        "urls.*"
+    ]
+    size = 10
+
+    response = es.search(
+        index=ELASTICSEARCH_INDEX,
+        track_total_hits=True,
+        fields=fields,
+        source=False,
+        size=size,
+        query=job_feed_config.query
+    )
+    print("Got %d Hits:" % response['hits']['total']['value'])
+
     exporter.export(response, output_file_name)
 
 

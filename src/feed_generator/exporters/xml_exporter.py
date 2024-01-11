@@ -10,7 +10,7 @@ class XMLExporter:
         # Add results to XML
         for hit in es_response['hits']['hits']:
             result_element = ET.SubElement(root, "result")
-            for key, value in hit['_source'].items():
+            for key, value in hit['fields'].items():
                 ET.SubElement(result_element, key).text = str(value)
 
         # Create and save XML file
