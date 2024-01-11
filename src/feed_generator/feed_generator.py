@@ -2,7 +2,7 @@ import sys
 
 import click
 
-from settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SIZE
+from settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SIZE, ELASTICSEARCH_DEFAULT_SOURCE
 from src.feed_generator.db import job_feed_config_queries
 from src.feed_generator.db.elasticsearch_handler import ElasticSearchHandler
 from src.feed_generator.exporters.xml_exporter import XMLExporter
@@ -20,20 +20,10 @@ def main(job_feed_config_id):
     output_file_name = "output.xml"
     es = ElasticSearchHandler.get_default().client
 
-    source = [
-        "description.common",
-        "title",
-        "location.*",
-        "compensation.*",
-        "type.*",
-        "client.*",
-        "urls.*"
-    ]
-
     response = es.search(
         index=ELASTICSEARCH_INDEX,
         track_total_hits=True,
-        source=source,
+        source=ELASTICSEARCH_DEFAULT_SOURCE,
         size=ELASTICSEARCH_SIZE,
         query=job_feed_config.query
     )
