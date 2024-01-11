@@ -20,7 +20,7 @@ def main(job_feed_config_id):
     output_file_name = "output.xml"
     es = ElasticSearchHandler.get_default().client
 
-    fields = [
+    source = [
         "description.common",
         "title",
         "location.*",
@@ -33,8 +33,7 @@ def main(job_feed_config_id):
     response = es.search(
         index=ELASTICSEARCH_INDEX,
         track_total_hits=True,
-        fields=fields,
-        source=False,
+        source=source,
         size=ELASTICSEARCH_SIZE,
         query=job_feed_config.query
     )
