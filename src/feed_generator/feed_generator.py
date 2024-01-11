@@ -5,7 +5,9 @@ import click
 from settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SIZE, ELASTICSEARCH_DEFAULT_SOURCE
 from src.feed_generator.db import job_feed_config_queries
 from src.feed_generator.db.elasticsearch_handler import ElasticSearchHandler
-from src.feed_generator.exporters.xml_exporter import XMLExporter
+from src.feed_generator.exporters.feed_files_builder import FeedFilesBuilder
+
+from src.feed_generator.exporters.formats.xml_handler import XMLHandler
 
 
 @click.command()
@@ -16,9 +18,10 @@ def main(job_feed_config_id):
         print(f"job_feed_config not found with ID {job_feed_config_id}")
         sys.exit(1)
 
-    exporter = XMLExporter()
     output_file_name = "output.xml"
     es = ElasticSearchHandler.get_default().client
+
+    ffb = FeedFilesBuilder(XMLHandler, output_file_name)
 
     response = es.search(
         index=ELASTICSEARCH_INDEX,
@@ -27,9 +30,9 @@ def main(job_feed_config_id):
         size=ELASTICSEARCH_SIZE,
         query=job_feed_config.query
     )
+    ffb.append_results(response['hits']['hits'])
+    ffb.close()
     print("Got %d Hits:" % response['hits']['total']['value'])
-
-    exporter.export(response, output_file_name)
 
 
 if __name__ == "__main__":
