@@ -2,7 +2,7 @@ import sys
 
 import click
 
-from settings import ELASTICSEARCH_INDEX
+from settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SIZE
 from src.feed_generator.db import job_feed_config_queries
 from src.feed_generator.db.elasticsearch_handler import ElasticSearchHandler
 from src.feed_generator.exporters.xml_exporter import XMLExporter
@@ -29,14 +29,13 @@ def main(job_feed_config_id):
         "client.*",
         "urls.*"
     ]
-    size = 10
 
     response = es.search(
         index=ELASTICSEARCH_INDEX,
         track_total_hits=True,
         fields=fields,
         source=False,
-        size=size,
+        size=ELASTICSEARCH_SIZE,
         query=job_feed_config.query
     )
     print("Got %d Hits:" % response['hits']['total']['value'])
