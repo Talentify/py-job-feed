@@ -1,11 +1,9 @@
 from src.feed_generator.db.sqlalchemy_handler import SqlAlchemyHandler
 from src.feed_generator.models.job_feed_config import JobFeedConfig
-from src.feed_generator.settings import TFLUXV3_CONN_URI
 
 
 def query_by_id(primary_key: int):
-    handler = SqlAlchemyHandler(TFLUXV3_CONN_URI)
-    session = handler.Session()
+    session = SqlAlchemyHandler.get_default().Session()
 
     result = None
     _exception = None
