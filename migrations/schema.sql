@@ -1,5 +1,9 @@
-CREATE TABLE tfluxv3.job_feed_config (
-	id BIGINT auto_increment NOT NULL,
-	query json NOT NULL,
-	CONSTRAINT job_feed_config_pk PRIMARY KEY (id)
+-- tfluxv3.job_feed_config definition
+
+CREATE TABLE `job_feed_config` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `query` json NOT NULL,
+  `token` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `job_feed_config_unique` (`token`)
 );
