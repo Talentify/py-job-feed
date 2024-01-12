@@ -23,16 +23,40 @@ def main(job_feed_config_id):
 
     ffb = FeedFilesBuilder(XMLHandler, output_file_name)
 
+    query = job_feed_config.query
+
+    page_size = ELASTICSEARCH_SIZE
+
+    current_page = 1
+
+    response = _search_job_openings(query, track_total_hits=True)
+    total_results = response['hits']['total']['value']
+    hits = response['hits']['hits']
+    print("Got %d Hits:" % total_results)
+    ffb.append_results(hits)
+    while current_page * page_size <= total_results:
+        start_index = current_page * page_size
+        print(f"Searching start_index={start_index}")
+        response = _search_job_openings(query, from_=start_index)
+        hits = response['hits']['hits']
+        ffb.append_results(hits)
+        current_page += 1
+    ffb.close()
+
+
+def _search_job_openings(query, from_=0, track_total_hits=False):
+    es = ElasticSearchHandler.get_default().client
     response = es.search(
         index=ELASTICSEARCH_INDEX,
-        track_total_hits=True,
+        track_total_hits=track_total_hits,
         source=ELASTICSEARCH_DEFAULT_SOURCE,
         size=ELASTICSEARCH_SIZE,
-        query=job_feed_config.query
+        query=query,
+        from_=from_
     )
-    ffb.append_results(response['hits']['hits'])
-    ffb.close()
-    print("Got %d Hits:" % response['hits']['total']['value'])
+
+
+    return response
 
 
 if __name__ == "__main__":
