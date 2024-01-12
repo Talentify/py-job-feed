@@ -41,7 +41,7 @@ def main(job_feed_config_id):
 
 def _search_config(job_feed_config_id):
     session = SqlAlchemyHandler.get_default().Session()
-    result = session.query(JobFeedConfig).get(job_feed_config_id)
+    result = session.get(JobFeedConfig, job_feed_config_id)
     session.close()
     return result
 
