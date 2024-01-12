@@ -1,8 +1,10 @@
+import os
 import sys
+from datetime import datetime
 
 import click
 
-from settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SIZE, ELASTICSEARCH_DEFAULT_SOURCE
+from settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SIZE, ELASTICSEARCH_DEFAULT_SOURCE, FEED_LOCAL_OUTPUT_DIRECTORY
 from src.feed_generator.db.elasticsearch_handler import ElasticSearchHandler
 from src.feed_generator.db.sqlalchemy_handler import SqlAlchemyHandler
 from src.feed_generator.exporters.feed_files_builder import FeedFilesBuilder
@@ -19,9 +21,11 @@ def main(job_feed_config_id):
         print(f"job_feed_config not found with ID {job_feed_config_id}")
         sys.exit(1)
 
-    output_file_name = "output.xml"
+    execution_identifier = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
-    ffb = FeedFilesBuilder(XMLHandler, output_file_name)
+    output_directory = _create_output_directory(job_feed_config_id, execution_identifier)
+
+    ffb = FeedFilesBuilder(XMLHandler, output_directory)
 
     query = job_feed_config.query
 
@@ -44,6 +48,12 @@ def _search_config(job_feed_config_id):
     result = session.get(JobFeedConfig, job_feed_config_id)
     session.close()
     return result
+
+
+def _create_output_directory(job_feed_config_id, execution_identifier):
+    output_directory_path = FEED_LOCAL_OUTPUT_DIRECTORY / str(job_feed_config_id) / execution_identifier
+    os.makedirs(output_directory_path)
+    return output_directory_path
 
 
 def _search_job_openings(query, from_=0, only_count=False):

@@ -3,6 +3,8 @@ import xml.etree.ElementTree as ET
 
 class XMLHandler:
 
+    extension = "xml"
+
     def __init__(self, file_path):
         super().__init__()
         self.file_path = file_path
@@ -15,6 +17,7 @@ class XMLHandler:
     def close_file(self):
         tree = ET.ElementTree(self.root)
         tree.write(self.file_path, encoding="utf-8", xml_declaration=True)
+        print(f"File written at {self.file_path}")
 
     def _dict_to_xml(self, dictionary, parent):
         for key, value in dictionary.items():
