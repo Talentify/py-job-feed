@@ -19,42 +19,45 @@ def main(job_feed_config_id):
         sys.exit(1)
 
     output_file_name = "output.xml"
-    es = ElasticSearchHandler.get_default().client
 
     ffb = FeedFilesBuilder(XMLHandler, output_file_name)
 
     query = job_feed_config.query
 
-    page_size = ELASTICSEARCH_SIZE
-
-    current_page = 1
-
-    response = _search_job_openings(query, track_total_hits=True)
+    response = _search_job_openings(query, only_count=True)
     total_results = response['hits']['total']['value']
-    hits = response['hits']['hits']
     print("Got %d Hits:" % total_results)
-    ffb.append_results(hits)
-    while current_page * page_size <= total_results:
-        start_index = current_page * page_size
-        print(f"Searching start_index={start_index}")
-        response = _search_job_openings(query, from_=start_index)
+
+    _from = 0
+    while _from <= total_results:
+        print(f"Searching from={_from}")
+        response = _search_job_openings(query, from_=_from)
         hits = response['hits']['hits']
         ffb.append_results(hits)
-        current_page += 1
+        _from += ELASTICSEARCH_SIZE
     ffb.close()
 
 
-def _search_job_openings(query, from_=0, track_total_hits=False):
+def _search_job_openings(query, from_=0, only_count=False):
+    index = ELASTICSEARCH_INDEX
+    if only_count:
+        source = None
+        track_total_hits = True
+        size = 0
+    else:
+        source = ELASTICSEARCH_DEFAULT_SOURCE
+        track_total_hits = False
+        size = ELASTICSEARCH_SIZE
+
     es = ElasticSearchHandler.get_default().client
     response = es.search(
-        index=ELASTICSEARCH_INDEX,
+        index=index,
+        source=source,
         track_total_hits=track_total_hits,
-        source=ELASTICSEARCH_DEFAULT_SOURCE,
-        size=ELASTICSEARCH_SIZE,
+        size=size,
         query=query,
         from_=from_
     )
-
 
     return response
 
