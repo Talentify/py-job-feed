@@ -7,9 +7,9 @@ import click
 from settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SIZE, ELASTICSEARCH_DEFAULT_SOURCE, FEED_LOCAL_OUTPUT_DIRECTORY
 from src.feed_generator.db.elasticsearch_handler import ElasticSearchHandler
 from src.feed_generator.db.sqlalchemy_handler import SqlAlchemyHandler
-from src.feed_generator.exporters.feed_files_builder import FeedFilesBuilder
+from src.feed_generator.exporters.xml_exporter import XMLExporter
 
-from src.feed_generator.exporters.formats.xml_handler import XMLHandler
+from src.feed_generator.helper.feed_files_manager import FeedFilesManager
 from src.feed_generator.models.job_feed_config import JobFeedConfig
 
 
@@ -25,7 +25,7 @@ def main(job_feed_config_id):
 
     output_directory = _create_output_directory(job_feed_config_id, execution_identifier)
 
-    ffb = FeedFilesBuilder(XMLHandler, output_directory)
+    feed = FeedFilesManager(XMLExporter, output_directory)
 
     query = job_feed_config.query
 
@@ -38,9 +38,9 @@ def main(job_feed_config_id):
         print(f"Searching from={_from}")
         response = _search_job_openings(query, from_=_from)
         hits = response['hits']['hits']
-        ffb.append_results(hits)
+        feed.add_es_hits(hits)
         _from += ELASTICSEARCH_SIZE
-    ffb.close()
+    feed.close()
 
 
 def _search_config(job_feed_config_id):
