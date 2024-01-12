@@ -3,17 +3,18 @@ import sys
 import click
 
 from settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SIZE, ELASTICSEARCH_DEFAULT_SOURCE
-from src.feed_generator.db import job_feed_config_queries
 from src.feed_generator.db.elasticsearch_handler import ElasticSearchHandler
+from src.feed_generator.db.sqlalchemy_handler import SqlAlchemyHandler
 from src.feed_generator.exporters.feed_files_builder import FeedFilesBuilder
 
 from src.feed_generator.exporters.formats.xml_handler import XMLHandler
+from src.feed_generator.models.job_feed_config import JobFeedConfig
 
 
 @click.command()
 @click.option('--job-feed-config-id', type=int, help='ID from table job_feed_config', required=True)
 def main(job_feed_config_id):
-    job_feed_config = job_feed_config_queries.query_by_id(job_feed_config_id)
+    job_feed_config = _search_config(job_feed_config_id)
     if not job_feed_config:
         print(f"job_feed_config not found with ID {job_feed_config_id}")
         sys.exit(1)
@@ -36,6 +37,13 @@ def main(job_feed_config_id):
         ffb.append_results(hits)
         _from += ELASTICSEARCH_SIZE
     ffb.close()
+
+
+def _search_config(job_feed_config_id):
+    session = SqlAlchemyHandler.get_default().Session()
+    result = session.query(JobFeedConfig).get(job_feed_config_id)
+    session.close()
+    return result
 
 
 def _search_job_openings(query, from_=0, only_count=False):
