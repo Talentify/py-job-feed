@@ -12,6 +12,7 @@ from feed_generator.helper.feed_files_manager import FeedFilesManager
 from feed_generator.models.job_feed_config import JobFeedConfig
 from settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SIZE, ELASTICSEARCH_DEFAULT_SOURCE, FEED_LOCAL_OUTPUT_DIRECTORY, \
     FEED_FORMAT_TYPE, FEED_UPLOAD_TYPE, DELETE_LOCAL_FEED_AFTER_EXECUTION
+from settings import LOGGER as logger
 
 
 @click.command()
@@ -19,7 +20,7 @@ from settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SIZE, ELASTICSEARCH_DEFA
 def main(job_feed_config_id):
     job_feed_config = _search_config(job_feed_config_id)
     if not job_feed_config:
-        print(f"job_feed_config not found with ID {job_feed_config_id}")
+        logger.debug(f"job_feed_config not found with ID {job_feed_config_id}")
         sys.exit(1)
 
     execution_identifier = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
@@ -32,11 +33,11 @@ def main(job_feed_config_id):
 
     response = _search_job_openings(query, only_count=True)
     total_results = response['hits']['total']['value']
-    print("Got %d Hits:" % total_results)
+    logger.debug("Got %d Hits:" % total_results)
 
     _from = 0
     while _from <= total_results:
-        print(f"Searching from={_from}")
+        logger.debug(f"Searching from={_from}")
         response = _search_job_openings(query, from_=_from)
         hits = response['hits']['hits']
         feed.add_es_hits(hits)
