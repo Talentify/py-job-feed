@@ -33,7 +33,7 @@ def main(job_feed_config_id):
 
     response = _search_job_openings(query, only_count=True)
     total_results = response['hits']['total']['value']
-    logger.debug("Got %d Hits:" % total_results)
+    logger.debug("Got %d hits" % total_results)
 
     _from = 0
     while _from <= total_results:
