@@ -1,13 +1,15 @@
 import os
+import shutil
 import sys
 from datetime import datetime
+from pathlib import Path
 
 import click
 
-from settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SIZE, ELASTICSEARCH_DEFAULT_SOURCE, FEED_LOCAL_OUTPUT_DIRECTORY
+from settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SIZE, ELASTICSEARCH_DEFAULT_SOURCE, FEED_LOCAL_OUTPUT_DIRECTORY, \
+    FEED_FORMAT_TYPE, FEED_UPLOAD_TYPE, DELETE_LOCAL_FEED_AFTER_EXECUTION
 from src.feed_generator.db.elasticsearch_handler import ElasticSearchHandler
 from src.feed_generator.db.sqlalchemy_handler import SqlAlchemyHandler
-from src.feed_generator.exporters.xml_exporter import XMLExporter
 
 from src.feed_generator.helper.feed_files_manager import FeedFilesManager
 from src.feed_generator.models.job_feed_config import JobFeedConfig
@@ -25,7 +27,7 @@ def main(job_feed_config_id):
 
     output_directory = _create_output_directory(job_feed_config_id, execution_identifier)
 
-    feed = FeedFilesManager(XMLExporter, output_directory)
+    feed = FeedFilesManager(FEED_FORMAT_TYPE.get_class(), output_directory)
 
     query = job_feed_config.query
 
@@ -42,6 +44,15 @@ def main(job_feed_config_id):
         _from += ELASTICSEARCH_SIZE
     feed.close()
 
+    if FEED_UPLOAD_TYPE:
+        uploader = FEED_UPLOAD_TYPE.get_class()()
+        files_prefix = str(job_feed_config_id)
+        uploader.delete_existing_files(files_prefix=files_prefix)
+        uploader.upload_files(origin_path=output_directory, key_prefix=files_prefix)
+
+    if DELETE_LOCAL_FEED_AFTER_EXECUTION:
+        shutil.rmtree(output_directory)
+
 
 def _search_config(job_feed_config_id):
     session = SqlAlchemyHandler.get_default().Session()
@@ -51,7 +62,7 @@ def _search_config(job_feed_config_id):
 
 
 def _create_output_directory(job_feed_config_id, execution_identifier):
-    output_directory_path = FEED_LOCAL_OUTPUT_DIRECTORY / str(job_feed_config_id) / execution_identifier
+    output_directory_path = Path(FEED_LOCAL_OUTPUT_DIRECTORY) / str(job_feed_config_id) / execution_identifier
     os.makedirs(output_directory_path)
     return output_directory_path
 
