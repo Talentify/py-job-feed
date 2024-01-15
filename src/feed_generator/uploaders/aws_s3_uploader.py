@@ -17,7 +17,23 @@ class AwsS3Uploader:
                                aws_secret_access_key=aws_secret_access_key,
                                region_name=aws_region)
 
-    def upload_files(self, origin_path: Path, bucket=AWS_BUCKET, key_prefix: Path = None):
+    def delete_existing_files(self, files_prefix, bucket_name=AWS_BUCKET):
+        # List objects in the bucket with the given prefix
+        response = self.s3.list_objects_v2(Bucket=bucket_name, Prefix=files_prefix)
+
+        # Check if there are any objects to delete
+        if 'Contents' in response:
+            # Create a list of objects to delete
+            objects_to_delete = [{'Key': obj['Key']} for obj in response['Contents']]
+
+            # Delete objects
+            self.s3.delete_objects(Bucket=bucket_name, Delete={'Objects': objects_to_delete})
+
+            print(f"Deleted {len(objects_to_delete)} objects with prefix '{files_prefix}' in bucket '{bucket_name}'")
+        else:
+            print(f"No objects found with prefix '{files_prefix}' in bucket '{bucket_name}'")
+
+    def upload_files(self, origin_path: Path, bucket=AWS_BUCKET, key_prefix: str = None):
         for root, dirs, files in os.walk(origin_path):
             for file in files:
                 file_path = os.path.join(root, file)

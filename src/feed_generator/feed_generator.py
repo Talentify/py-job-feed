@@ -46,7 +46,8 @@ def main(job_feed_config_id):
 
     if FEED_UPLOAD_TYPE:
         uploader = FEED_UPLOAD_TYPE.get_class()()
-        files_prefix = Path(str(job_feed_config_id))
+        files_prefix = str(job_feed_config_id)
+        uploader.delete_existing_files(files_prefix=files_prefix)
         uploader.upload_files(origin_path=output_directory, key_prefix=files_prefix)
 
     if DELETE_LOCAL_FEED_AFTER_EXECUTION:
