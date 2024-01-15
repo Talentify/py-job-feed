@@ -6,13 +6,12 @@ from pathlib import Path
 
 import click
 
+from feed_generator.db.elasticsearch_handler import ElasticSearchHandler
+from feed_generator.db.sqlalchemy_handler import SqlAlchemyHandler
+from feed_generator.helper.feed_files_manager import FeedFilesManager
+from feed_generator.models.job_feed_config import JobFeedConfig
 from settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SIZE, ELASTICSEARCH_DEFAULT_SOURCE, FEED_LOCAL_OUTPUT_DIRECTORY, \
     FEED_FORMAT_TYPE, FEED_UPLOAD_TYPE, DELETE_LOCAL_FEED_AFTER_EXECUTION
-from src.feed_generator.db.elasticsearch_handler import ElasticSearchHandler
-from src.feed_generator.db.sqlalchemy_handler import SqlAlchemyHandler
-
-from src.feed_generator.helper.feed_files_manager import FeedFilesManager
-from src.feed_generator.models.job_feed_config import JobFeedConfig
 
 
 @click.command()

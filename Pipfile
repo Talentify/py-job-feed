@@ -9,6 +9,8 @@ sqlalchemy = "*"
 click = "*"
 pymysql = "*"
 boto3 = "*"
+python-json-logger = "*"
+pyyaml = "*"
 
 [dev-packages]
 

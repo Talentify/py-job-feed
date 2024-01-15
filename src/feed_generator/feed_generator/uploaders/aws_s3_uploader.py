@@ -3,7 +3,7 @@ from pathlib import Path
 
 import boto3
 
-from src.feed_generator.settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET
+from feed_generator.settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET
 
 
 class AwsS3Uploader:

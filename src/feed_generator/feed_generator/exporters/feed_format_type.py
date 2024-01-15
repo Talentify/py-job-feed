@@ -1,6 +1,6 @@
 from enum import Enum
 
-from src.feed_generator.exporters.xml_exporter import XMLExporter
+from feed_generator.exporters.xml_exporter import XMLExporter
 
 
 class FeedFormatType(Enum):
