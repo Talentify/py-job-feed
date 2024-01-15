@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from src.feed_generator.settings import FEED_FILE_MAX_RECORDS
+from feed_generator.settings import FEED_FILE_MAX_RECORDS
 
 
 class FeedFilesManager:

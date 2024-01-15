@@ -6,7 +6,7 @@ class FeedUploadType(Enum):
 
     def get_class(self):
         if self == FeedUploadType.AWS_S3:
-            from src.feed_generator.uploaders.aws_s3_uploader import AwsS3Uploader
+            from feed_generator.uploaders.aws_s3_uploader import AwsS3Uploader
             return AwsS3Uploader
         else:
             raise ValueError(f"invalid feed upload type {self}")

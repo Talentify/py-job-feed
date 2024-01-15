@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.feed_generator.settings import TFLUXV3_CONN_URI
+from feed_generator.settings import TFLUXV3_CONN_URI
 
 
 class SqlAlchemyHandler:

@@ -3,7 +3,8 @@ from pathlib import Path
 
 import boto3
 
-from src.feed_generator.settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET
+from feed_generator.settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET
+from feed_generator.settings import LOGGER as logger
 
 
 class AwsS3Uploader:
@@ -29,9 +30,9 @@ class AwsS3Uploader:
             # Delete objects
             self.s3.delete_objects(Bucket=bucket_name, Delete={'Objects': objects_to_delete})
 
-            print(f"Deleted {len(objects_to_delete)} objects with prefix '{files_prefix}' in bucket '{bucket_name}'")
+            logger.debug(f"Deleted {len(objects_to_delete)} objects with prefix '{files_prefix}' in bucket '{bucket_name}'")
         else:
-            print(f"No objects found with prefix '{files_prefix}' in bucket '{bucket_name}'")
+            logger.debug(f"No objects found with prefix '{files_prefix}' in bucket '{bucket_name}'")
 
     def upload_files(self, origin_path: Path, bucket=AWS_BUCKET, key_prefix: str = None):
         for root, dirs, files in os.walk(origin_path):
@@ -45,6 +46,6 @@ class AwsS3Uploader:
     def upload_file(self, file_path, key, bucket=AWS_BUCKET):
         try:
             self.s3.upload_file(file_path, bucket, key)
-            print(f"File uploaded successfully: {key}")
+            logger.debug(f"File uploaded successfully: {key}")
         except Exception as e:
-            print(f"Error uploading file {key}: {str(e)}")
+            logger.debug(f"Error uploading file {key}: {str(e)}")

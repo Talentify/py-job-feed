@@ -1,5 +1,7 @@
 import xml.etree.ElementTree as ET
 
+from feed_generator.settings import LOGGER as logger
+
 
 class XMLExporter:
 
@@ -17,7 +19,7 @@ class XMLExporter:
     def close(self):
         tree = ET.ElementTree(self.root)
         tree.write(self.file_path, encoding="utf-8", xml_declaration=True)
-        print(f"File written at {self.file_path}")
+        logger.debug(f"File written at {self.file_path}")
 
     def _dict_to_xml(self, dictionary, parent):
         for key, value in dictionary.items():

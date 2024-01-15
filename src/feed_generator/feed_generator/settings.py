@@ -1,8 +1,18 @@
+import logging.config
+import logging.config
 import os
 from pathlib import Path
+from pkgutil import get_data
 
-from src.feed_generator.exporters.feed_format_type import FeedFormatType
-from src.feed_generator.uploaders.feed_upload_type import FeedUploadType
+from yaml import safe_load
+
+from feed_generator.exporters.feed_format_type import FeedFormatType
+from feed_generator.uploaders.feed_upload_type import FeedUploadType
+
+# Logging settings
+logger_config = get_data("feed_generator", "config/logger.yaml")
+logging.config.dictConfig(safe_load(logger_config))
+LOGGER = logging.getLogger("feed_generator")
 
 ELASTICSEARCH_HOST = os.getenv("ELASTICSEARCH_HOST")
 ELASTICSEARCH_USER = os.getenv("ELASTICSEARCH_USER")
