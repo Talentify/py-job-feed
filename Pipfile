@@ -11,6 +11,7 @@ pymysql = "*"
 boto3 = "*"
 python-json-logger = "*"
 pyyaml = "*"
+flask = "*"
 
 [dev-packages]
 
