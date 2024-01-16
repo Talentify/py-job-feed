@@ -5,4 +5,4 @@ COPY ./src/feed_downloader .
 RUN python -m setup sdist && \
     pip install dist/*.tar.gz
 
-CMD [ "python" , "feed_downloader/main.py"]
+CMD [ "python" , "feed_downloader/run.py"]
