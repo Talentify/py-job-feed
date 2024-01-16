@@ -1,5 +1,5 @@
 import boto3
-from flask import send_file, jsonify, Blueprint, Response
+from flask import jsonify, Blueprint, Response
 
 from settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_BUCKET, FEED_DOWNLOAD_CHUNK_SIZE
 
