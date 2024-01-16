@@ -1,6 +1,7 @@
 import logging.config
 import logging.config
 import os
+from distutils.util import strtobool
 from pathlib import Path
 from pkgutil import get_data
 
@@ -37,4 +38,4 @@ AWS_BUCKET = os.getenv("AWS_BUCKET")
 
 FEED_FORMAT_TYPE = FeedFormatType(os.getenv("FEED_FORMAT_TYPE"))
 FEED_UPLOAD_TYPE = FeedUploadType(os.getenv("FEED_UPLOAD_TYPE")) if os.getenv("FEED_UPLOAD_TYPE") else None
-DELETE_LOCAL_FEED_AFTER_EXECUTION = os.getenv("DELETE_LOCAL_FEED_AFTER_EXECUTION", "False").lower() == "true"
+DELETE_LOCAL_FEED_AFTER_EXECUTION = bool(strtobool(os.getenv("DELETE_LOCAL_FEED_AFTER_EXECUTION")))
