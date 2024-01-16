@@ -1,7 +1,7 @@
 import boto3
 from flask import send_file, jsonify, Blueprint, Response
 
-from settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_BUCKET
+from settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_BUCKET, FEED_DOWNLOAD_CHUNK_SIZE
 
 feed_bp = Blueprint('feed', __name__)
 
@@ -38,7 +38,7 @@ def download_file(token, page):
     }
 
     return Response(
-        response['Body'].iter_chunks(chunk_size=1024),
+        response['Body'].iter_chunks(chunk_size=FEED_DOWNLOAD_CHUNK_SIZE),
         headers=headers,
         status=200
     )
