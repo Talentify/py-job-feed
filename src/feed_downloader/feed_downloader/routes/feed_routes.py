@@ -11,10 +11,8 @@ def list_files(token):
     s3 = get_aws_s3_client()
 
     try:
-        # List objects in the specified S3 bucket and prefix
         response = s3.list_objects_v2(Bucket=AWS_BUCKET, Prefix=token)
 
-        # Extract the file names from the response
         files = [obj['Key'] for obj in response.get('Contents', [])]
 
         return jsonify({'files': files})
