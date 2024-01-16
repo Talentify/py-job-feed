@@ -1,7 +1,7 @@
 from flask import jsonify, Blueprint, Response
 
 from feed_downloader.services.aws import get_aws_s3_client
-from settings import AWS_BUCKET, FEED_DOWNLOAD_CHUNK_SIZE
+from feed_downloader.settings import AWS_BUCKET, FEED_DOWNLOAD_CHUNK_SIZE
 
 feed_bp = Blueprint('feed', __name__)
 

@@ -1,7 +1,11 @@
 from flask import Flask, send_file, jsonify
 import boto3
 
-from settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_BUCKET
+from feed_downloader.settings import (
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    AWS_BUCKET,
+)
 
 app = Flask(__name__)
 
