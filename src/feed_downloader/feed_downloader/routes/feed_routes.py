@@ -1,5 +1,5 @@
 import boto3
-from flask import send_file, jsonify, Blueprint
+from flask import send_file, jsonify, Blueprint, Response
 
 from settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_BUCKET
 
@@ -27,13 +27,18 @@ def list_files(token):
 def download_file(token, page):
     s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 
-    try:
-        filename = f"feed_{page}.xml"
-        # Download the file from S3
-        s3.download_file(AWS_BUCKET, f"{token}/{filename}", filename)
+    s3_key = f"{token}/feed_{page}.xml"
 
-        # Send the downloaded file to the client
-        return send_file(filename, as_attachment=True)
+    response = s3.get_object(Bucket=AWS_BUCKET, Key=s3_key)
 
-    except Exception as e:
-        return str(e)
+    headers = {
+        'Content-Type': 'application/octet-stream',
+        'Content-Disposition': f'attachment; filename={s3_key.split("/")[-1]}',
+        'Content-Length': response['ContentLength']
+    }
+
+    return Response(
+        response['Body'].iter_chunks(chunk_size=1024),
+        headers=headers,
+        status=200
+    )
