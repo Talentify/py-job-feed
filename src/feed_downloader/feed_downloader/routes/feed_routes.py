@@ -1,14 +1,14 @@
-import boto3
 from flask import jsonify, Blueprint, Response
 
-from settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_BUCKET, FEED_DOWNLOAD_CHUNK_SIZE
+from feed_downloader.services.aws import get_aws_s3_client
+from settings import AWS_BUCKET, FEED_DOWNLOAD_CHUNK_SIZE
 
 feed_bp = Blueprint('feed', __name__)
 
 
 @feed_bp.route('/<token>/', methods=['GET'])
 def list_files(token):
-    s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+    s3 = get_aws_s3_client()
 
     try:
         # List objects in the specified S3 bucket and prefix
@@ -25,7 +25,7 @@ def list_files(token):
 
 @feed_bp.route('/<token>/<page>', methods=['GET'])
 def download_file(token, page):
-    s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+    s3 = get_aws_s3_client()
 
     s3_key = f"{token}/feed_{page}.xml"
 
