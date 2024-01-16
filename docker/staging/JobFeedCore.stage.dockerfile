@@ -2,8 +2,8 @@ FROM arm64v8/python:3.10-alpine3.15
 
 ENV APP_PATH /app
 
-#RUN apk update \
-#    && apk add --no-cache bash \
+RUN apk update \
+    && apk add --no-cache bash
 #        curl \
 #        wget \
 #        build-base \
