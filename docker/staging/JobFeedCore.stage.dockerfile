@@ -4,16 +4,6 @@ ENV APP_PATH /app
 
 RUN apk update \
     && apk add --no-cache bash
-#        curl \
-#        wget \
-#        build-base \
-#        git \
-#        openssh-client \
-#        libffi-dev \
-#        zip \
-#        unzip \
-#        ca-certificates \
-#        openblas-dev
 
 RUN pip install pipenv
 
