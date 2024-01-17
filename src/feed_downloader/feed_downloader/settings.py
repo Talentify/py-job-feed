@@ -17,7 +17,4 @@ AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_REGION = os.getenv("AWS_REGION")
 AWS_BUCKET = os.getenv("AWS_BUCKET")
 
-APP_HOST = os.getenv("APP_HOST")
-APP_PORT = os.getenv("APP_PORT")
-
 FEED_DOWNLOAD_CHUNK_SIZE = int(os.getenv("FEED_DOWNLOAD_CHUNK_SIZE"))
