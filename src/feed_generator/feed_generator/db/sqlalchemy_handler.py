@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from feed_generator.settings import TFLUXV3_CONN_URI
+from feed_generator.settings import JOBFEED_CONN_URI
 
 
 class SqlAlchemyHandler:
@@ -20,4 +20,4 @@ class SqlAlchemyHandler:
 
     @classmethod
     def get_default(cls):
-        return cls.get_instance(TFLUXV3_CONN_URI)
+        return cls.get_instance(JOBFEED_CONN_URI)

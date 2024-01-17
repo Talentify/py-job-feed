@@ -1,4 +1,6 @@
-CREATE TABLE `job_feed_config` (
+CREATE SCHEMA `jobfeed` ;
+
+CREATE TABLE `jobfeed`.`config` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `client_id` bigint NOT NULL,
   `query` json NOT NULL,
