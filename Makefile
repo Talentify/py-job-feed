@@ -34,6 +34,7 @@ docker-build-staging-generator: qemu
 
 staging-env-vars: aws-ecr-auth-staging
 	kubectl apply -k kubernetes/staging/config --context=${STAGING_EKS_CLUSTER} -n ${NAMESPACE}
+	kubectl apply -k kubernetes/staging/secrets --context=${STAGING_EKS_CLUSTER} -n ${NAMESPACE}
 
 staging-deploy-downloader: clean-up-staging-downloader
 	kubectl apply -f kubernetes/staging/deployment/feed-downloader.yaml --context=${STAGING_EKS_CLUSTER} -n ${NAMESPACE}

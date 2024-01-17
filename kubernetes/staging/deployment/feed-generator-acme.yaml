@@ -19,6 +19,8 @@ spec:
                     name: feed-config
                 - secretRef:
                     name: system-secrets
+                - secretRef:
+                    name: feed-secrets
               image: 124082513016.dkr.ecr.us-east-1.amazonaws.com/py-job-feed-generator:stage
               command: ["run"]
               args: ["--job-feed-config-id=1"]

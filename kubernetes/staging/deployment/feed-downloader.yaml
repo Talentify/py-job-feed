@@ -33,6 +33,8 @@ spec:
                 name: feed-config
             - secretRef:
                 name: system-secrets
+            - secretRef:
+                name: feed-secrets
           image: 124082513016.dkr.ecr.us-east-1.amazonaws.com/py-job-feed-downloader:stage
           imagePullPolicy: Always
           ports:
