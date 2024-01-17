@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: feed-generator-acme
 spec:
-  schedule: "@hourly"
+  schedule: "0 21,9 */1 * *"
   successfulJobsHistoryLimit: 4
   failedJobsHistoryLimit: 4
   jobTemplate:
