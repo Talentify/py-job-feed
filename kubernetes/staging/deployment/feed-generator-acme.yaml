@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: feed-generator-acme
+spec:
+  schedule: "@hourly"
+  successfulJobsHistoryLimit: 4
+  failedJobsHistoryLimit: 4
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: feed-generator-acme
+              envFrom:
+                - configMapRef:
+                    name: system-config
+                - configMapRef:
+                    name: feed-config
+                - secretRef:
+                    name: system-secrets
+              image: 124082513016.dkr.ecr.us-east-1.amazonaws.com/py-job-feed-generator:stage
+              command: ["run"]
+              args: ["--job-feed-config-id=1"]
+              imagePullPolicy: Always
+          restartPolicy: OnFailure

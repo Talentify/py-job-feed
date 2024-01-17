@@ -1,5 +1,5 @@
 from feed_downloader import create_app
-from settings import APP_HOST, APP_PORT, DEBUG
+from feed_downloader.settings import APP_HOST, APP_PORT, DEBUG
 
 app = create_app()
 

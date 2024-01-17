@@ -1,6 +1,6 @@
 import boto3
 
-from settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+from feed_downloader.settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
 
 
 def get_aws_s3_client():
