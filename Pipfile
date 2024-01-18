@@ -13,8 +13,10 @@ python-json-logger = "*"
 pyyaml = "*"
 flask = "*"
 gunicorn = "*"
+json-log-formatter = "*"
 
 [dev-packages]
+python-dotenv = "*"
 
 [requires]
 python_version = "3.10"

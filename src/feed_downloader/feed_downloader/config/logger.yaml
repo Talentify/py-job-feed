@@ -1,16 +1,5 @@
 version: 1
 
-loggers:
-  root:
-    level: WARNING
-    handlers:
-      - json_handler
-  feed_downloader:
-    level: DEBUG
-    handlers:
-      - json_handler
-    propagate: false
-
 formatters:
   json_formatter:
     "()": "pythonjsonlogger.jsonlogger.JsonFormatter"
@@ -20,3 +9,15 @@ handlers:
   json_handler:
     class: logging.StreamHandler
     formatter: json_formatter
+
+loggers:
+  feed_downloader:
+    level: DEBUG
+    handlers:
+      - json_handler
+    propagate: false
+
+root:
+  level: DEBUG
+  handlers:
+    - json_handler
