@@ -10,8 +10,9 @@ from feed_generator.db.elasticsearch_handler import ElasticSearchHandler
 from feed_generator.db.sqlalchemy_handler import SqlAlchemyHandler
 from feed_generator.helper.feed_files_manager import FeedFilesManager
 from feed_generator.models.job_feed_config import JobFeedConfig
-from feed_generator.settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SIZE, ELASTICSEARCH_DEFAULT_SOURCE, \
-    FEED_LOCAL_OUTPUT_DIRECTORY, FEED_FORMAT_TYPE, FEED_UPLOAD_TYPE, DELETE_LOCAL_FEED_AFTER_EXECUTION
+from feed_generator.settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SCROLL_TIME, ELASTICSEARCH_DEFAULT_SOURCE, \
+    FEED_LOCAL_OUTPUT_DIRECTORY, FEED_FORMAT_TYPE, FEED_UPLOAD_TYPE, DELETE_LOCAL_FEED_AFTER_EXECUTION, \
+    ELASTICSEARCH_SIZE
 from feed_generator.settings import LOGGER as logger
 
 
@@ -31,22 +32,19 @@ def main(job_feed_config_id):
 
     query = job_feed_config.query
 
-    response = _search_job_openings(query, only_count=True)
-    total_results = response['hits']['total']['value']
+    total_results = _count_job_openings(query)
     logger.debug("Got %d hits" % total_results)
 
-    _from = 0
-    while _from <= total_results:
-        logger.debug(f"Searching from={_from}")
-        response = _search_job_openings(query, from_=_from)
-        hits = response['hits']['hits']
+    hits_count = 0
+    for hits in _search_job_openings(query, scroll='1m'):
+        hits_count += len(hits)
+        logger.debug(f"Received {hits_count} hits")
         feed.add_es_hits(hits)
-        _from += ELASTICSEARCH_SIZE
     feed.close()
 
     if FEED_UPLOAD_TYPE:
         uploader = FEED_UPLOAD_TYPE.get_class()()
-        files_prefix = str(job_feed_config_id)
+        files_prefix = job_feed_config.token
         uploader.delete_existing_files(files_prefix=files_prefix)
         uploader.upload_files(origin_path=output_directory, key_prefix=files_prefix)
 
@@ -67,28 +65,44 @@ def _create_output_directory(job_feed_config_id, execution_identifier):
     return output_directory_path
 
 
-def _search_job_openings(query, from_=0, only_count=False):
-    index = ELASTICSEARCH_INDEX
-    if only_count:
-        source = None
-        track_total_hits = True
-        size = 0
-    else:
-        source = ELASTICSEARCH_DEFAULT_SOURCE
-        track_total_hits = False
-        size = ELASTICSEARCH_SIZE
-
+def _count_job_openings(query) -> int:
     es = ElasticSearchHandler.get_default().client
+
     response = es.search(
-        index=index,
-        source=source,
-        track_total_hits=track_total_hits,
-        size=size,
-        query=query,
-        from_=from_
+        index=ELASTICSEARCH_INDEX,
+        source=None,
+        track_total_hits=True,
+        size=0,
+        query=query
     )
 
-    return response
+    count = int(response['hits']['total']['value'])
+
+    return count
+
+
+def _search_job_openings(query, scroll='1m'):
+    es = ElasticSearchHandler.get_default().client
+
+    response = es.search(
+        index=ELASTICSEARCH_INDEX,
+        source=ELASTICSEARCH_DEFAULT_SOURCE,
+        size=ELASTICSEARCH_SIZE,
+        scroll=ELASTICSEARCH_SCROLL_TIME,
+        query=query
+    )
+
+    scroll_id = response['_scroll_id']
+    hits = response['hits']['hits']
+
+    while hits:
+        yield hits
+
+        response = es.scroll(scroll_id=scroll_id, scroll=scroll)
+        scroll_id = response['_scroll_id']
+        hits = response['hits']['hits']
+
+    es.clear_scroll(scroll_id=scroll_id)
 
 
 if __name__ == "__main__":

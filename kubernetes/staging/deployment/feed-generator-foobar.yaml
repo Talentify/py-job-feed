@@ -1,9 +1,9 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: feed-generator-acme
+  name: feed-generator-foobar
 spec:
-  schedule: "0 21,9 */1 * *"
+  schedule: "0 22,10 */1 * *"
   successfulJobsHistoryLimit: 4
   failedJobsHistoryLimit: 4
   jobTemplate:
@@ -11,7 +11,7 @@ spec:
       template:
         spec:
           containers:
-            - name: feed-generator-acme
+            - name: feed-generator-foobar
               envFrom:
                 - configMapRef:
                     name: system-config
@@ -23,6 +23,6 @@ spec:
                     name: feed-secrets
               image: 124082513016.dkr.ecr.us-east-1.amazonaws.com/py-job-feed-generator:stage
               command: ["run"]
-              args: ["--job-feed-config-id=1"]
+              args: ["--job-feed-config-id=2"]
               imagePullPolicy: Always
           restartPolicy: OnFailure
