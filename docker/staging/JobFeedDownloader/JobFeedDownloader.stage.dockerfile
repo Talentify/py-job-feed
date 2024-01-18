@@ -5,4 +5,6 @@ COPY ./src/feed_downloader .
 RUN python -m setup sdist && \
     pip install dist/*.tar.gz
 
-CMD ["gunicorn", "-w", "4", "--timeout", "300", "--bind", "0.0.0.0:8080", "app:app"]
+COPY ./docker/staging/JobFeedDownloader/gunicorn_config.py /app/gunicorn_config.py
+
+CMD ["gunicorn", "--config", "/app/gunicorn_config.py", "app:app"]

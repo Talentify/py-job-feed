@@ -28,7 +28,7 @@ docker-build-staging-core: qemu
 	docker buildx build --rm --push --tag ${STAGING_ECR_REPO}/py-job-feed-core:stage --platform=linux/arm64 -f docker/staging/JobFeedCore.stage.dockerfile .
 
 docker-build-staging-downloader: qemu
-	docker buildx build --rm --push --tag ${STAGING_ECR_REPO}/py-job-feed-downloader:stage --platform=linux/arm64 -f docker/staging/JobFeedDownloader.stage.dockerfile .
+	docker buildx build --rm --push --tag ${STAGING_ECR_REPO}/py-job-feed-downloader:stage --platform=linux/arm64 -f docker/staging/JobFeedDownloader/JobFeedDownloader.stage.dockerfile .
 
 docker-build-staging-generator: qemu
 	docker buildx build --rm --push --tag ${STAGING_ECR_REPO}/py-job-feed-generator:stage --platform=linux/arm64 -f docker/staging/JobFeedGenerator.stage.dockerfile .
