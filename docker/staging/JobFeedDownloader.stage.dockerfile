@@ -5,4 +5,4 @@ COPY ./src/feed_downloader .
 RUN python -m setup sdist && \
     pip install dist/*.tar.gz
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
+CMD ["gunicorn", "-w", "4", "--timeout", "300", "--bind", "0.0.0.0:8080", "app:app"]
