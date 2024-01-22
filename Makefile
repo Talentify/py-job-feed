@@ -24,7 +24,6 @@ clean-up-staging-generator: aws-ecr-auth-staging
 	kubectl delete --ignore-not-found=true -f kubernetes/staging/deployment/feed-generator-foobar.yaml --context=${STAGING_EKS_CLUSTER} -n ${NAMESPACE}
 	kubectl delete --ignore-not-found=true -f kubernetes/staging/deployment/feed-generator-xpto.yaml --context=${STAGING_EKS_CLUSTER} -n ${NAMESPACE}
 	kubectl delete --ignore-not-found=true -f kubernetes/staging/deployment/feed-generator-4499-csg.yaml --context=${STAGING_EKS_CLUSTER} -n ${NAMESPACE}
->>>>>>> development
 	# Add more clients here
 
 docker-build-staging-core: qemu
