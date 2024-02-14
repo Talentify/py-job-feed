@@ -15,6 +15,7 @@ flask = "*"
 gunicorn = "*"
 json-log-formatter = "*"
 cryptography = "*"
+lxml = "*"
 
 [dev-packages]
 python-dotenv = "*"
