@@ -1,4 +1,6 @@
 from lxml import etree
+
+from feed_generator.es_hit_formatters import ESHitFormatterABC
 from feed_generator.settings import LOGGER as logger
 
 
@@ -6,11 +8,12 @@ class XMLExporter:
 
     extension = "xml"
 
-    def __init__(self, file_path, extra_fields: dict = None):
+    def __init__(self, file_path, extra_fields: dict = None, es_hit_formatter: ESHitFormatterABC = None):
         super().__init__()
         self.file_path = file_path
         self.root = etree.Element("source")
         self._fill_extra_fields(extra_fields)
+        self.es_hit_formatter = es_hit_formatter
 
     def _fill_extra_fields(self, extra_fields):
         if not extra_fields:
@@ -19,7 +22,10 @@ class XMLExporter:
 
     def add_es_hit(self, es_hit):
         result_element = etree.SubElement(self.root, "job")
-        self._dict_to_xml(es_hit['_source'], result_element)
+        _data = es_hit['_source']
+        if self.es_hit_formatter:
+            _data = self.es_hit_formatter.format(_data)
+        self._dict_to_xml(_data, result_element)
 
     def close(self):
         tree = etree.ElementTree(self.root)

@@ -9,8 +9,10 @@ class FeedFilesManager:
     _current_file_size = None
     _current_file_index = None
 
-    def __init__(self, exporter_class, output_directory_path: Path, last_build_date: datetime, quantity_of_jobs: int):
+    def __init__(self, es_hit_formatter, exporter_class, output_directory_path: Path, last_build_date: datetime,
+                 quantity_of_jobs: int):
         super().__init__()
+        self._es_hit_formatter = es_hit_formatter
         self._exporter_class = exporter_class
         self._output_directory_path = output_directory_path
         self.feed_file_limit = FEED_FILE_MAX_RECORDS
@@ -40,7 +42,7 @@ class FeedFilesManager:
             self._current_file_index = 0
         self._current_file_size = 0
         file_path = self._output_directory_path / f"feed_{self._current_file_index+1}.{self._exporter_class.extension}"
-        self._current_file = self._exporter_class(file_path, vars(self.extra_fields))
+        self._current_file = self._exporter_class(file_path, vars(self.extra_fields), self._es_hit_formatter)
 
     def _add_es_hit(self, es_hit):
         self._current_file.add_es_hit(es_hit)
