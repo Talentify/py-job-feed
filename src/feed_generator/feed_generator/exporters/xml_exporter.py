@@ -7,13 +7,19 @@ class XMLExporter:
 
     extension = "xml"
 
-    def __init__(self, file_path):
+    def __init__(self, file_path, extra_fields: dict = None):
         super().__init__()
         self.file_path = file_path
-        self.root = ET.Element("results")
+        self.root = ET.Element("source")
+        self._fill_extra_fields(extra_fields)
+
+    def _fill_extra_fields(self, extra_fields):
+        if not extra_fields:
+            return
+        self._dict_to_xml(extra_fields, self.root)
 
     def add_es_hit(self, es_hit):
-        result_element = ET.SubElement(self.root, "result")
+        result_element = ET.SubElement(self.root, "job")
         self._dict_to_xml(es_hit['_source'], result_element)
 
     def close(self):
