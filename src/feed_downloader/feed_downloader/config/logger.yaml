@@ -1,0 +1,23 @@
+version: 1
+
+formatters:
+  json_formatter:
+    "()": "pythonjsonlogger.jsonlogger.JsonFormatter"
+    format: "%(levelname)s %(asctime)s %(name)s %(message)s %(pathname)s %(lineno)d %(exc_info)s"
+
+handlers:
+  json_handler:
+    class: logging.StreamHandler
+    formatter: json_formatter
+
+loggers:
+  feed_downloader:
+    level: DEBUG
+    handlers:
+      - json_handler
+    propagate: false
+
+root:
+  level: DEBUG
+  handlers:
+    - json_handler

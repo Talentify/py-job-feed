@@ -1,0 +1,6 @@
+configMapGenerator:
+  - name: feed-config
+    envs:
+      - .env.config
+generatorOptions:
+  disableNameSuffixHash: true

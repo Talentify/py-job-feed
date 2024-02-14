@@ -1,7 +1,8 @@
--- tfluxv3.job_feed_config definition
+CREATE SCHEMA `jobfeed` ;
 
-CREATE TABLE `job_feed_config` (
+CREATE TABLE `jobfeed`.`config` (
   `id` bigint NOT NULL AUTO_INCREMENT,
+  `client_id` bigint NOT NULL,
   `query` json NOT NULL,
   `token` varchar(64) NOT NULL,
   PRIMARY KEY (`id`),

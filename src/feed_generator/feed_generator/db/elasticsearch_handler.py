@@ -1,6 +1,6 @@
 from elasticsearch import Elasticsearch
 
-from src.feed_generator.settings import ELASTICSEARCH_HOST, ELASTICSEARCH_USER, ELASTICSEARCH_PASSWORD
+from feed_generator.settings import ELASTICSEARCH_HOST, ELASTICSEARCH_USER, ELASTICSEARCH_PASSWORD
 
 
 class ElasticSearchHandler:

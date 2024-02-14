@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: feed-downloader
+spec:
+  ports:
+    - name: service
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: feed-downloader
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feed-downloader
+spec:
+  selector:
+    matchLabels:
+      app: feed-downloader
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: feed-downloader
+    spec:
+      containers:
+        - name: feed-downloader
+          envFrom:
+            - configMapRef:
+                name: system-config
+            - configMapRef:
+                name: feed-config
+            - secretRef:
+                name: system-secrets
+            - secretRef:
+                name: feed-secrets
+          image: 124082513016.dkr.ecr.us-east-1.amazonaws.com/py-job-feed-downloader:stage
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
