@@ -39,4 +39,6 @@ class XMLExporter:
                 self._dict_to_xml(value, child)
             else:
                 child = etree.SubElement(parent, key)
+                if value is None:
+                    value = ""
                 child.text = etree.CDATA(str(value))
