@@ -8,11 +8,13 @@ import click
 
 from feed_generator.db.elasticsearch_handler import ElasticSearchHandler
 from feed_generator.db.sqlalchemy_handler import SqlAlchemyHandler
+from feed_generator.es_hit_formatters import ESHitFormatterABC
+from feed_generator.es_hit_formatters.default import DefaultESHitFormatter
 from feed_generator.helper.feed_files_manager import FeedFilesManager
 from feed_generator.models.job_feed_config import JobFeedConfig
-from feed_generator.settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SCROLL_TIME, ELASTICSEARCH_DEFAULT_SOURCE, \
+from feed_generator.settings import ELASTICSEARCH_INDEX, ELASTICSEARCH_SCROLL_TIME, \
     FEED_LOCAL_OUTPUT_DIRECTORY, FEED_FORMAT_TYPE, FEED_UPLOAD_TYPE, DELETE_LOCAL_FEED_AFTER_EXECUTION, \
-    ELASTICSEARCH_SIZE
+    ELASTICSEARCH_SIZE, FEED_FILE_MAX_RECORDS
 from feed_generator.settings import LOGGER as logger
 
 
@@ -24,19 +26,28 @@ def main(job_feed_config_id):
         logger.debug(f"job_feed_config not found with ID {job_feed_config_id}")
         sys.exit(1)
 
-    execution_identifier = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-
-    output_directory = _create_output_directory(job_feed_config_id, execution_identifier)
-
-    feed = FeedFilesManager(FEED_FORMAT_TYPE.get_class(), output_directory)
+    build_time = datetime.now()
 
     query = job_feed_config.query
 
     total_results = _count_job_openings(query)
     logger.debug("Got %d hits" % total_results)
 
+    execution_identifier = build_time.strftime('%Y_%m_%d_%H_%M_%S')
+    output_directory = _create_output_directory(job_feed_config_id, execution_identifier)
+
+    es_hit_formatter = DefaultESHitFormatter
+
+    feed = FeedFilesManager(
+        es_hit_formatter=es_hit_formatter,
+        exporter_class=FEED_FORMAT_TYPE.get_class(),
+        output_directory_path=output_directory,
+        last_build_date=build_time,
+        quantity_of_jobs=total_results
+    )
+
     hits_count = 0
-    for hits in _search_job_openings(query, scroll='1m'):
+    for hits in _search_job_openings(query, es_hit_formatter=es_hit_formatter, scroll='1m'):
         hits_count += len(hits)
         logger.debug(f"Received {hits_count} hits")
         feed.add_es_hits(hits)
@@ -81,12 +92,12 @@ def _count_job_openings(query) -> int:
     return count
 
 
-def _search_job_openings(query, scroll='1m'):
+def _search_job_openings(query: dict, es_hit_formatter: ESHitFormatterABC.__class__, scroll: str = '1m'):
     es = ElasticSearchHandler.get_default().client
 
     response = es.search(
         index=ELASTICSEARCH_INDEX,
-        source=ELASTICSEARCH_DEFAULT_SOURCE,
+        source=es_hit_formatter.source(),
         size=ELASTICSEARCH_SIZE,
         scroll=ELASTICSEARCH_SCROLL_TIME,
         query=query
